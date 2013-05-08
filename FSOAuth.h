@@ -47,4 +47,14 @@ typedef NS_ENUM(NSUInteger, FSOAuthErrorCode) {
 + (NSString *)accessCodeForFSOAuthURL:(NSURL *)url error:(FSOAuthErrorCode *)errorCode;
 
 
+/**
+ Given an access code, will request an auth token from the Foursquare servers.
+ 
+ For security reasons, it is recommended that you pass the returned accessCode to your own server and have it convert the code to
+ an access token using your secret key instead of including your client secret in your app's binary
+ 
+ You can optionally pass in a FSOAuthErrorCode pointer to have it set to the error (if any) on return (or pass NULL)
+ */
++ (void)accessTokenForCode:(NSString *)accessCode clientId:(NSString *)clientID callbackURIString:(NSString *)callbackURIString clientSecret:(NSString *)clientSecret error:(FSOAuthErrorCode *)errorCode;
+
 @end

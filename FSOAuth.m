@@ -91,5 +91,14 @@
     }
     return accessCode;
 }
+
++ (void)accessTokenForCode:(NSString *)accessCode clientId:(NSString *)clientID callbackURIString:(NSString *)callbackURIString clientSecret:(NSString *)clientSecret error:(FSOAuthErrorCode *)errorCode {
+    if ([accessCode length] > 0
+        && [clientID length] > 0
+        && [callbackURIString length] > 0
+        && [clientSecret length] > 0) {
+#warning work in progress
+    }
+}
      
 @end

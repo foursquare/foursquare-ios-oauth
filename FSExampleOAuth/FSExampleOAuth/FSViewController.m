@@ -15,10 +15,9 @@
 
 @implementation FSViewController
 
-- (void)authorizeTapped:(id)sender {
-    
-#error Fill in your own app's FSQ client id here to use this test
-    FSOAuthStatusCode statusCode = [FSOAuth authorizeUserUsingClientId:@"" callbackURIString:@"fsoauthexample://authorized"];
+- (void)connectTapped:(id)sender {
+
+    FSOAuthStatusCode statusCode = [FSOAuth authorizeUserUsingClientId:self.clientIdField.text callbackURIString:@"fsoauthexample://authorized"];
     
     switch (statusCode) {
         case FSOAuthStatusSuccess:
@@ -85,16 +84,8 @@
     }
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)convertTapped:(id)sender {
+#warning work in progress
 }
 
 @end

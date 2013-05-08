@@ -19,6 +19,8 @@
 		F10698BE1729B6F50053AF0B /* FSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F10698BD1729B6F50053AF0B /* FSViewController.m */; };
 		F10698C11729B6F50053AF0B /* FSViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F10698BF1729B6F50053AF0B /* FSViewController.xib */; };
 		F10698C91729B70E0053AF0B /* FSOAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = F10698C81729B70E0053AF0B /* FSOAuth.m */; };
+		F175C8E01739BB7E007D7FF9 /* connect-blue.png in Resources */ = {isa = PBXBuildFile; fileRef = F175C8DE1739BB7E007D7FF9 /* connect-blue.png */; };
+		F175C8E11739BB7E007D7FF9 /* connect-blue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F175C8DF1739BB7E007D7FF9 /* connect-blue@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +42,8 @@
 		F10698C01729B6F50053AF0B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/FSViewController.xib; sourceTree = "<group>"; };
 		F10698C71729B70E0053AF0B /* FSOAuth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FSOAuth.h; path = ../../FSOAuth.h; sourceTree = "<group>"; };
 		F10698C81729B70E0053AF0B /* FSOAuth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FSOAuth.m; path = ../../FSOAuth.m; sourceTree = "<group>"; };
+		F175C8DE1739BB7E007D7FF9 /* connect-blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "connect-blue.png"; sourceTree = "<group>"; };
+		F175C8DF1739BB7E007D7FF9 /* connect-blue@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "connect-blue@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +97,8 @@
 				F10698BC1729B6F50053AF0B /* FSViewController.h */,
 				F10698BD1729B6F50053AF0B /* FSViewController.m */,
 				F10698BF1729B6F50053AF0B /* FSViewController.xib */,
+				F175C8DE1739BB7E007D7FF9 /* connect-blue.png */,
+				F175C8DF1739BB7E007D7FF9 /* connect-blue@2x.png */,
 				F10698AB1729B6F50053AF0B /* Supporting Files */,
 			);
 			path = FSExampleOAuth;
@@ -169,6 +175,8 @@
 				F10698B91729B6F50053AF0B /* Default@2x.png in Resources */,
 				F10698BB1729B6F50053AF0B /* Default-568h@2x.png in Resources */,
 				F10698C11729B6F50053AF0B /* FSViewController.xib in Resources */,
+				F175C8E01739BB7E007D7FF9 /* connect-blue.png in Resources */,
+				F175C8E11739BB7E007D7FF9 /* connect-blue@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -305,6 +313,7 @@
 				F10698C61729B6F50053AF0B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
