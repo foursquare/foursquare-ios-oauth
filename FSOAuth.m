@@ -105,7 +105,7 @@
         && [clientID length] > 0
         && [callbackURIString length] > 0
         && [clientSecret length] > 0) {
-#warning work in progress
+        
     }
 }
      

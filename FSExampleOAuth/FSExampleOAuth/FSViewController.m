@@ -25,33 +25,36 @@
 
 - (void)connectTapped:(id)sender {
 
-    FSOAuthStatusCode statusCode = [FSOAuth authorizeUserUsingClientId:self.clientIdField.text callbackURIString:@"fsoauthexample://authorized"];
+    FSOAuthStatusCode statusCode = [FSOAuth authorizeUserUsingClientId:self.clientIdField.text callbackURIString:self.callbackUrlField.text];
+    
+    NSString *resultText = nil;
     
     switch (statusCode) {
         case FSOAuthStatusSuccess:
             // do nothing
             break;
         case FSOAuthStatusErrorInvalidCallback: {
-            self.resultLabel.text = @"Invalid callback URI";
+            resultText = @"Invalid callback URI";
             break;
         }
         case FSOAuthStatusErrorFoursquareNotInstalled: {
-            self.resultLabel.text = @"Foursquare not installed";
+            resultText = @"Foursquare not installed";
             break;
         }
         case FSOAuthStatusErrorInvalidClientID: {
-            self.resultLabel.text = @"Invalid client id";
+            resultText = @"Invalid client id";
             break;
         }
         case FSOAuthStatusErrorFoursquareOAuthNotSupported: {
-            self.resultLabel.text = @"Installed FSQ app does not support oauth";
+            resultText = @"Installed FSQ app does not support oauth";
             break;
         }
         default: {
-            self.resultLabel.text = @"Unknown status code returned";
+            resultText = @"Unknown status code returned";
             break;
         }
     }
+    self.resultLabel.text = [NSString stringWithFormat:@"Result: %@", resultText];
 }
 
 - (void)handleURL:(NSURL *)url {
@@ -59,41 +62,50 @@
         FSOAuthErrorCode errorCode;
         NSString *accessCode = [FSOAuth accessCodeForFSOAuthURL:url error:&errorCode];;
         
+        NSString *resultText = nil;
+        
         switch (errorCode) {
             case FSOAuthErrorNone: {
-                self.resultLabel.text = [NSString stringWithFormat:@"Access code: %@", accessCode];
+                resultText = [NSString stringWithFormat:@"Access code: %@", accessCode];
                 break;
             }
             case FSOAuthErrorInvalidClient: {
-                self.resultLabel.text = @"Invalid client error";
+                resultText = @"Invalid client error";
                 break;
             }
             case FSOAuthErrorInvalidGrant: {
-                self.resultLabel.text = @"Invalid grant error";
+                resultText = @"Invalid grant error";
                 break;
             }
             case FSOAuthErrorInvalidRequest: {
-                self.resultLabel.text =  @"Invalid request error";
+                resultText =  @"Invalid request error";
                 break;
             }
             case FSOAuthErrorUnauthorizedClient: {
-                self.resultLabel.text =  @"Invalid unauthorized client error";
+                resultText =  @"Invalid unauthorized client error";
                 break;
             }
             case FSOAuthErrorUnsupportedGrantType: {
-                self.resultLabel.text =  @"Invalid unsupported grant error";
+                resultText =  @"Invalid unsupported grant error";
                 break;
             }
             default: {
-                self.resultLabel.text =  @"Unknown error";
+                resultText =  @"Unknown error";
                 break;
             }
         }
+        self.resultLabel.text = [NSString stringWithFormat:@"Result: %@", resultText];
     }
 }
 
 - (void)convertTapped:(id)sender {
-#warning work in progress
+
+}
+
+- (void)dismissKeyboard:(id)sender {
+    [self.clientIdField resignFirstResponder];
+    [self.callbackUrlField resignFirstResponder];
+    [self.clientSecretField resignFirstResponder];
 }
 
 @end

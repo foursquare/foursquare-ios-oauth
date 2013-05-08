@@ -20,14 +20,18 @@
 
 
 @property (weak, nonatomic) IBOutlet UITextField *clientIdField;
+@property (weak, nonatomic) IBOutlet UITextField *callbackUrlField;
 @property (weak, nonatomic) IBOutlet UILabel *resultLabel;
+
 @property (weak, nonatomic) IBOutlet UITextField *clientSecretField;
 @property (weak, nonatomic) IBOutlet UILabel *tokenResultLabel;
+
 
 
 - (IBAction)connectTapped:(id)sender;
 - (IBAction)convertTapped:(id)sender;
 
 - (void)handleURL:(NSURL *)url;
+- (IBAction)dismissKeyboard:(id)sender;
 
 @end
