@@ -19,6 +19,8 @@
 
 @interface FSViewController ()
 
+@property (nonatomic) NSString *latestAccessCode;
+
 @end
 
 @implementation FSViewController
@@ -67,6 +69,7 @@
         switch (errorCode) {
             case FSOAuthErrorNone: {
                 resultText = [NSString stringWithFormat:@"Access code: %@", accessCode];
+                self.latestAccessCode = accessCode;
                 break;
             }
             case FSOAuthErrorInvalidClient: {
@@ -99,7 +102,22 @@
 }
 
 - (void)convertTapped:(id)sender {
-
+    [FSOAuth requestAccessTokenForCode:self.latestAccessCode
+                              clientId:self.clientIdField.text
+                     callbackURIString:self.callbackUrlField.text
+                          clientSecret:self.clientSecretField.text
+                       completionBlock:^(NSString *authToken, BOOL requestCompleted) {
+                           
+                           NSString *resultText = nil;
+                           if (requestCompleted) {
+                               resultText = [NSString stringWithFormat:@"Auth Token: %@", authToken];
+                           }
+                           else {
+                               resultText = @"An error occurred when attempting to convert to an auth token.";
+                           }
+                           
+                           self.resultLabel.text = [NSString stringWithFormat:@"Result: %@", resultText];
+                       }];
 }
 
 - (void)dismissKeyboard:(id)sender {

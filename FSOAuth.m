@@ -16,8 +16,6 @@
 
 #import "FSOAuth.h"
 
-#define kFoursquareURL       @"foursquare://"
-#define kFoursquareOAuthPath    @"fsqauth://authorize?client_id=%@&v=%@&redirect_uri=%@"
 #define kFoursquareOAuthRequiredVersion @"20130312"
 #define kFoursquareAppStoreURL @"https://itunes.apple.com/app/foursquare/id306934924?mt=8"
 
@@ -33,7 +31,7 @@
         return FSOAuthStatusErrorInvalidCallback;
     }
     
-    if (![sharedApplication canOpenURL:[NSURL URLWithString:kFoursquareURL]]) {
+    if (![sharedApplication canOpenURL:[NSURL URLWithString:@"foursquare://"]]) {
         [sharedApplication openURL:[NSURL URLWithString:kFoursquareAppStoreURL]];
         return FSOAuthStatusErrorFoursquareNotInstalled;
     }
@@ -44,7 +42,7 @@
                                                                                                                (CFStringRef)@"!*'();:@&=+$,/?%#[]",
                                                                                                                kCFStringEncodingUTF8);
     
-    NSURL *authURL = [NSURL URLWithString:[NSString stringWithFormat:kFoursquareOAuthPath, clientID, kFoursquareOAuthRequiredVersion, urlEncodedCallbackString]];
+    NSURL *authURL = [NSURL URLWithString:[NSString stringWithFormat:@"fsqauth://authorize?client_id=%@&v=%@&redirect_uri=%@", clientID, kFoursquareOAuthRequiredVersion, urlEncodedCallbackString]];
     
     if (![sharedApplication canOpenURL:authURL]) {
         [sharedApplication openURL:[NSURL URLWithString:kFoursquareAppStoreURL]];
@@ -100,12 +98,32 @@
     return accessCode;
 }
 
-+ (void)accessTokenForCode:(NSString *)accessCode clientId:(NSString *)clientID callbackURIString:(NSString *)callbackURIString clientSecret:(NSString *)clientSecret error:(FSOAuthErrorCode *)errorCode {
++ (void)requestAccessTokenForCode:(NSString *)accessCode clientId:(NSString *)clientID callbackURIString:(NSString *)callbackURIString clientSecret:(NSString *)clientSecret completionBlock:(FSTokenRequestCompletionBlock)completionBlock {
     if ([accessCode length] > 0
         && [clientID length] > 0
         && [callbackURIString length] > 0
-        && [clientSecret length] > 0) {
+        && [clientSecret length] > 0
+        && completionBlock) {
         
+        NSString *urlEncodedCallbackString = (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
+                                                                                                                   (CFStringRef)callbackURIString,
+                                                                                                                   NULL,
+                                                                                                                   (CFStringRef)@"!*'();:@&=+$,/?%#[]",
+                                                                                                                   kCFStringEncodingUTF8);
+        
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://foursquare.com/oauth2/access_token?client_id=%@&client_secret=%@&grant_type=authorization_code&redirect_uri=%@&code=%@", clientID, clientSecret, urlEncodedCallbackString, accessCode]]];
+        
+        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+            if (data && [[response MIMEType] isEqualToString:@"application/json"]) {
+                id jsonObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
+                if ([jsonObj isKindOfClass:[NSDictionary class]]) {
+                    NSDictionary *jsonDict = (NSDictionary *)jsonObj;
+                    completionBlock(jsonDict[@"access_token"], YES);
+                    return;
+                }
+            }
+            completionBlock(nil, NO);
+        }];
     }
 }
      

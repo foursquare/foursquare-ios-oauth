@@ -34,6 +34,14 @@ typedef NS_ENUM(NSUInteger, FSOAuthErrorCode) {
     FSOAuthErrorUnsupportedGrantType
 };
 
+/**
+ Block signature for auth token request completion.
+ 
+ authToken will be nil or the token string upon completion.
+ requestCompleted will be YES if the server was actually contacted and the response successfully downloaded, else NO
+ */
+typedef void (^FSTokenRequestCompletionBlock)(NSString *authToken, BOOL requestCompleted);
+
 @interface FSOAuth : NSObject
 
 /**
@@ -58,11 +66,16 @@ typedef NS_ENUM(NSUInteger, FSOAuthErrorCode) {
 /**
  Given an access code, will request an auth token from the Foursquare servers.
  
+ This will initiate an asynchronous request to the Foursquare servers, and call the passed in completion block when it finishes or fails.
+ 
  For security reasons, it is recommended that you pass the returned accessCode to your own server and have it convert the code to
  an access token using your secret key instead of including your client secret in your app's binary
  
- You can optionally pass in a FSOAuthErrorCode pointer to have it set to the error (if any) on return (or pass NULL)
  */
-+ (void)accessTokenForCode:(NSString *)accessCode clientId:(NSString *)clientID callbackURIString:(NSString *)callbackURIString clientSecret:(NSString *)clientSecret error:(FSOAuthErrorCode *)errorCode;
++ (void)requestAccessTokenForCode:(NSString *)accessCode
+                  clientId:(NSString *)clientID
+         callbackURIString:(NSString *)callbackURIString
+              clientSecret:(NSString *)clientSecret
+                  completionBlock:(FSTokenRequestCompletionBlock)completionBlock;
 
 @end
