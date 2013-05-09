@@ -26,7 +26,8 @@ typedef NS_ENUM(NSUInteger, FSOAuthStatusCode) {
 
 // See http://tools.ietf.org/html/rfc6749#section-5.2
 typedef NS_ENUM(NSUInteger, FSOAuthErrorCode) {
-    FSOAuthErrorNone,                           
+    FSOAuthErrorNone,
+    FSOAuthErrorUnknown,
     FSOAuthErrorInvalidRequest,
     FSOAuthErrorInvalidClient,
     FSOAuthErrorInvalidGrant,
@@ -39,8 +40,9 @@ typedef NS_ENUM(NSUInteger, FSOAuthErrorCode) {
  
  authToken will be nil or the token string upon completion.
  requestCompleted will be YES if the server was actually contacted and the response successfully downloaded, else NO
+ errorCode will be one of the values in the enum above. Only valid if requestCompleted is YES
  */
-typedef void (^FSTokenRequestCompletionBlock)(NSString *authToken, BOOL requestCompleted);
+typedef void (^FSTokenRequestCompletionBlock)(NSString *authToken, BOOL requestCompleted, FSOAuthErrorCode errorCode);
 
 @interface FSOAuth : NSObject
 

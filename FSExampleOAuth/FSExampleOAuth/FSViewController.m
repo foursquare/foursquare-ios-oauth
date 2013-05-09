@@ -27,6 +27,8 @@
 
 - (void)connectTapped:(id)sender {
 
+    [self dismissKeyboard:nil];
+    
     FSOAuthStatusCode statusCode = [FSOAuth authorizeUserUsingClientId:self.clientIdField.text callbackURIString:self.callbackUrlField.text];
     
     NSString *resultText = nil;
@@ -59,61 +61,82 @@
     self.resultLabel.text = [NSString stringWithFormat:@"Result: %@", resultText];
 }
 
+- (NSString *)errorMessageForCode:(FSOAuthErrorCode)errorCode {
+    NSString *resultText = nil;
+    
+    switch (errorCode) {
+        case FSOAuthErrorNone: {
+            break;
+        }
+        case FSOAuthErrorInvalidClient: {
+            resultText = @"Invalid client error";
+            break;
+        }
+        case FSOAuthErrorInvalidGrant: {
+            resultText = @"Invalid grant error";
+            break;
+        }
+        case FSOAuthErrorInvalidRequest: {
+            resultText =  @"Invalid request error";
+            break;
+        }
+        case FSOAuthErrorUnauthorizedClient: {
+            resultText =  @"Invalid unauthorized client error";
+            break;
+        }
+        case FSOAuthErrorUnsupportedGrantType: {
+            resultText =  @"Invalid unsupported grant error";
+            break;
+        }
+        case FSOAuthErrorUnknown:
+        default: {
+            resultText =  @"Unknown error";
+            break;
+        }
+    }
+    
+    return resultText;
+}
+
 - (void)handleURL:(NSURL *)url {
     if ([[url scheme] isEqualToString:@"fsoauthexample"]) {
         FSOAuthErrorCode errorCode;
         NSString *accessCode = [FSOAuth accessCodeForFSOAuthURL:url error:&errorCode];;
         
         NSString *resultText = nil;
-        
-        switch (errorCode) {
-            case FSOAuthErrorNone: {
-                resultText = [NSString stringWithFormat:@"Access code: %@", accessCode];
-                self.latestAccessCode = accessCode;
-                break;
-            }
-            case FSOAuthErrorInvalidClient: {
-                resultText = @"Invalid client error";
-                break;
-            }
-            case FSOAuthErrorInvalidGrant: {
-                resultText = @"Invalid grant error";
-                break;
-            }
-            case FSOAuthErrorInvalidRequest: {
-                resultText =  @"Invalid request error";
-                break;
-            }
-            case FSOAuthErrorUnauthorizedClient: {
-                resultText =  @"Invalid unauthorized client error";
-                break;
-            }
-            case FSOAuthErrorUnsupportedGrantType: {
-                resultText =  @"Invalid unsupported grant error";
-                break;
-            }
-            default: {
-                resultText =  @"Unknown error";
-                break;
-            }
+        if (errorCode == FSOAuthErrorNone) {
+            resultText = [NSString stringWithFormat:@"Access code: %@", accessCode];
+            self.latestAccessCode = accessCode;
         }
+        else {
+            resultText = [self errorMessageForCode:errorCode];
+        }
+
         self.resultLabel.text = [NSString stringWithFormat:@"Result: %@", resultText];
     }
 }
 
 - (void)convertTapped:(id)sender {
+    
+    [self dismissKeyboard:nil];
+    
     [FSOAuth requestAccessTokenForCode:self.latestAccessCode
                               clientId:self.clientIdField.text
                      callbackURIString:self.callbackUrlField.text
                           clientSecret:self.clientSecretField.text
-                       completionBlock:^(NSString *authToken, BOOL requestCompleted) {
+                       completionBlock:^(NSString *authToken, BOOL requestCompleted, FSOAuthErrorCode errorCode) {
                            
                            NSString *resultText = nil;
                            if (requestCompleted) {
-                               resultText = [NSString stringWithFormat:@"Auth Token: %@", authToken];
+                               if (errorCode == FSOAuthErrorNone) {
+                                   resultText = [NSString stringWithFormat:@"Auth Token: %@", authToken];
+                               }
+                               else {
+                                   resultText = [self errorMessageForCode:errorCode];
+                               }
                            }
                            else {
-                               resultText = @"An error occurred when attempting to convert to an auth token.";
+                               resultText = @"An error occurred when attempting to connect to the Foursquare server.";
                            }
                            
                            self.resultLabel.text = [NSString stringWithFormat:@"Result: %@", resultText];

@@ -54,6 +54,27 @@
     return FSOAuthStatusSuccess;
 }
 
++ (FSOAuthErrorCode)errorCodeForString:(NSString *)value {
+    if ([value isEqualToString:@"invalid_request"]) {
+        return FSOAuthErrorInvalidRequest;
+    }
+    else if ([value isEqualToString:@"invalid_client"]) {
+        return FSOAuthErrorInvalidClient;
+    }
+    else if ([value isEqualToString:@"invalid_grant"]) {
+        return FSOAuthErrorInvalidGrant;
+    }
+    else if ([value isEqualToString:@"unauthorized_client"]) {
+        return FSOAuthErrorUnauthorizedClient;
+    }
+    else if ([value isEqualToString:@"unsupported_grant_type"]) {
+        return FSOAuthErrorUnsupportedGrantType;
+    }
+    else {
+        return FSOAuthErrorUnknown;
+    }
+}
+
 + (NSString *)accessCodeForFSOAuthURL:(NSURL *)url error:(FSOAuthErrorCode *)errorCode {
     NSString *accessCode = nil;
     
@@ -75,21 +96,7 @@
                 }
                 else if ([param isEqualToString:@"error"]) {
                     if (errorCode != NULL) {
-                        if ([value isEqualToString:@"invalid_request"]) {
-                            *errorCode = FSOAuthErrorInvalidRequest;
-                        }
-                        else if ([value isEqualToString:@"invalid_client"]) {
-                            *errorCode = FSOAuthErrorInvalidClient;
-                        }
-                        else if ([value isEqualToString:@"invalid_grant"]) {
-                            *errorCode = FSOAuthErrorInvalidGrant;
-                        }
-                        else if ([value isEqualToString:@"unauthorized_client"]) {
-                            *errorCode = FSOAuthErrorUnauthorizedClient;
-                        }
-                        else if ([value isEqualToString:@"unsupported_grant_type"]) {
-                            *errorCode = FSOAuthErrorUnsupportedGrantType;
-                        }
+                        *errorCode = [self errorCodeForString:value];
                     }   
                 }
             }
@@ -118,11 +125,18 @@
                 id jsonObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
                 if ([jsonObj isKindOfClass:[NSDictionary class]]) {
                     NSDictionary *jsonDict = (NSDictionary *)jsonObj;
-                    completionBlock(jsonDict[@"access_token"], YES);
+
+                    FSOAuthErrorCode errorCode = FSOAuthErrorNone;
+                    
+                    if (jsonDict[@"error"]) {
+                        errorCode = [self errorCodeForString:jsonDict[@"error"]];
+                    }
+                    
+                    completionBlock(jsonDict[@"access_token"], YES, errorCode);
                     return;
                 }
             }
-            completionBlock(nil, NO);
+            completionBlock(nil, NO, FSOAuthErrorNone);
         }];
     }
 }
