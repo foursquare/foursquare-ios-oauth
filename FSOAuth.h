@@ -38,9 +38,9 @@ typedef NS_ENUM(NSUInteger, FSOAuthErrorCode) {
 /**
  Block signature for auth token request completion.
  
- authToken will be nil or the token string upon completion.
- requestCompleted will be YES if the server was actually contacted and the response successfully downloaded, else NO
- errorCode will be one of the values in the enum above. Only valid if requestCompleted is YES
+ @param authToken Either the user's auth token or nil if there was an error.
+ @param requestCompleted Will be YES if the server was actually contacted and the response successfully downloaded, else NO
+ @param errorCode Will be one of the values in the enum above. Only valid if requestCompleted is YES
  */
 typedef void (^FSTokenRequestCompletionBlock)(NSString *authToken, BOOL requestCompleted, FSOAuthErrorCode errorCode);
 
@@ -51,6 +51,10 @@ typedef void (^FSTokenRequestCompletionBlock)(NSString *authToken, BOOL requestC
  
  May return with an error code if passed in parameters are invalid. 
  Will launch into the Foursquare page on the App Store if Foursquare is not installed or outdated.
+ 
+ @param clientID Your app's Foursquare clientID ( see http://foursquare.com/developers/apps )
+ @param callbackURIString Your app's callback ( must be registered as a Redirect URI with Foursquare, see http://foursquare.com/developers/apps )
+ @return Success or one of several failure codes. See enum definition above
  */
 + (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID callbackURIString:(NSString *)callbackURIString;
 
@@ -61,6 +65,11 @@ typedef void (^FSTokenRequestCompletionBlock)(NSString *authToken, BOOL requestC
  an access token using your secret key instead of including your client secret in your app's binary
  
  You can optionally pass in a FSOAuthErrorCode pointer to have it set to the error (if any) on return (or pass NULL)
+ 
+ @param url The NSURL object to parse
+ @param errorCode An FSOAuthErrorCode pointer that will be set to the error code on return. Pass NULL if you are not interested in the error code.
+                  See enum definition above for possible error code values.
+ @return The access code for this user or nil if there was an error in authorization or parsing the URL.
  */
 + (NSString *)accessCodeForFSOAuthURL:(NSURL *)url error:(FSOAuthErrorCode *)errorCode;
 
@@ -73,6 +82,13 @@ typedef void (^FSTokenRequestCompletionBlock)(NSString *authToken, BOOL requestC
  For security reasons, it is recommended that you pass the returned accessCode to your own server and have it convert the code to
  an access token using your secret key instead of including your client secret in your app's binary
  
+ @param accessCode An accessCode from a successful authorization attempt. Returned by accessCodeForFSOAuthURL:error:
+ @param clientID Your app's Foursquare client ID
+ @param callbackURIString Your app's callback. Must be identical to the callback used to generate the accessCode, but will not actually be called.
+ @param clientSecret Your app's client secret.
+ @param completionBlock A block to execute when the transaction is compelted. See the FSTokenRequestCompletionBlock definition above.
+ 
+ @warning For security reasons, it is recommended that you not use this method if possible.
  */
 + (void)requestAccessTokenForCode:(NSString *)accessCode
                   clientId:(NSString *)clientID

@@ -78,13 +78,13 @@
 + (NSString *)accessCodeForFSOAuthURL:(NSURL *)url error:(FSOAuthErrorCode *)errorCode {
     NSString *accessCode = nil;
     
+    if (errorCode != NULL) {
+        *errorCode = FSOAuthErrorUnknown;
+    }
+    
     if (url) {
         NSArray *parameterPairs = [[url query] componentsSeparatedByString:@"&"];
-        
-        if (errorCode != NULL) {
-            *errorCode = FSOAuthErrorNone;
-        }
-        
+
         for (NSString *pair in parameterPairs) {
             NSArray *keyValue = [pair componentsSeparatedByString:@"="];
             if ([keyValue count] == 2) {
@@ -93,6 +93,12 @@
                 
                 if ([param isEqualToString:@"code"]) {
                     accessCode = value;
+                    
+                    if (errorCode != NULL) {
+                        if (*errorCode == FSOAuthErrorUnknown) { // don't clobber any previously found real error value
+                            *errorCode = FSOAuthErrorNone;
+                        }
+                    }
                 }
                 else if ([param isEqualToString:@"error"]) {
                     if (errorCode != NULL) {
