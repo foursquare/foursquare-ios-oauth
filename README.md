@@ -30,25 +30,11 @@ Note: Your callback _MUST_ be added to the "Redirect URI(s)" field at http://fou
 
 There are five possible return values from this method:
 
-FSOAuthStatusSuccess
---------------------
-The OAuth request was successfully initiated. The user has been bounced out to the Foursquare iOS app to approve or deny authorizing your app.
-
-FSOAuthStatusErrorInvalidClientID
----------------------------------
-You did not provide a valid client ID to the method.
-
-FSOAuthStatusErrorInvalidCallback
----------------------------------
-You did not provide a valid callback string that has been registered with the system.
-
-FSOAuthStatusErrorFoursquareNotInstalled
-----------------------------------------
-Foursquare is not installed on the user's iOS device. They have been bounced out to the Foursquare app page on the App Store.
-
-FSOAuthStatusErrorFoursquareOAuthNotSupported
----------------------------------------------
-The version of the Foursquare app installed on the user's iOS device is too old to support native auth. They have been bounced out to the Foursquare app page on the App Store.
+* **FSOAuthStatusSuccess** - The OAuth request was successfully initiated. The user has been bounced out to the Foursquare iOS app to approve or deny authorizing your app.
+* **FSOAuthStatusErrorInvalidClientID** - You did not provide a valid client ID to the method.
+* **FSOAuthStatusErrorInvalidCallback** - You did not provide a valid callback string that has been registered with the system.
+* **FSOAuthStatusErrorFoursquareNotInstalled** - Foursquare is not installed on the user's iOS device. They have been bounced out to the Foursquare app page on the App Store.
+* **FSOAuthStatusErrorFoursquareOAuthNotSupported** - The version of the Foursquare app installed on the user's iOS device is too old to support native auth. They have been bounced out to the Foursquare app page on the App Store.
 
 
 ```objc
@@ -59,17 +45,9 @@ Call this method when you receive the callback from Foursquare, passing in the N
 
 The possible error code values are:
 
-FSOAuthErrorNone
-----------------
-There was no error and the access code was read successfully.
-
-FSOAuthErrorUnknown
--------------------
-An unrecognized error string was returned from the Foursquare server or the URL could not be parsed properly
-
-FSOAuthErrorInvalidRequest / FSOAuthErrorInvalidClient / FSOAuthErrorInvalidGrant / FSOAuthErrorUnauthorizedClient / FSOAuthErrorUnsupportedGrantType
-----------------------------
-These enumeration values correspond to the OAuth error codes listed at http://tools.ietf.org/html/rfc6749#section-5.2
+* **FSOAuthErrorNone** - There was no error and the access code was read successfully.
+* **FSOAuthErrorUnknown** - An unrecognized error string was returned from the Foursquare server or the URL could not be parsed properly
+* **FSOAuthErrorInvalidRequest** / **FSOAuthErrorInvalidClient** / **FSOAuthErrorInvalidGrant** / **FSOAuthErrorUnauthorizedClient** / **FSOAuthErrorUnsupportedGrantType** - These enumeration values correspond to the OAuth error codes listed at http://tools.ietf.org/html/rfc6749#section-5.2
 
 ```objc
 + (void)requestAccessTokenForCode:(NSString *)accessCode
@@ -98,7 +76,6 @@ _errorCode_ is an error code from the Foursquare server. It has the same possibl
 _requestCompleted_ will be YES if the network request actually completed properly or NO if it did not. If this is NO, the values of _authToken_ and _errorCode_ should be ignored.
 
 
-
-
-
+More Information
+================
 See https://developer.foursquare.com for more information on how to use the Foursquare API. 
