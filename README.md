@@ -41,7 +41,7 @@ There are five possible return values from this method:
 + (NSString *)accessCodeForFSOAuthURL:(NSURL *)url error:(FSOAuthErrorCode *)errorCode;
 ```
 
-Call this method when you receive the callback from Foursquare, passing in the NSURL object your received. It will parse out the access code and error code (if any) from the URL's parameters and return them to you.
+Call this method when you receive the callback from Foursquare, passing in the NSURL object you received. It will parse out the access code and error code (if any) from the URL's parameters and return them to you.
 
 The possible error code values are:
 
@@ -57,7 +57,7 @@ The possible error code values are:
 		          completionBlock:(FSTokenRequestCompletionBlock)completionBlock;
 ```
 
-This method will initiate an asynchronous network request to the Foursquare token to convert a user's access code into an auth token.
+This method will initiate an asynchronous network request to Foursquare to convert a user's access code into an auth token.
 
 *WARNING:* For security reasons, it is recommended that you not use this method if possible. You should pass the returned accessCode to your own server and have it contact the Foursquare server to convert the code to an access token instead of including your client secret in your app's binary. However, this helper method is provided for you to use if this is not possible for your app.
 
@@ -73,8 +73,17 @@ _authToken_ will be set to the Foursquare OAuth token for the user if the reques
 
 _errorCode_ is an error code from the Foursquare server. It has the same possible values as the errorCode from accessCodeForFSOAuthURL:error: (see above)
 
-_requestCompleted_ will be YES if the network request actually completed properly or NO if it did not. If this is NO, the values of _authToken_ and _errorCode_ should be ignored.
+_requestCompleted_ will be YES if the network request actually completed properly or NO if it did not. If this is NO, the values of _authToken_ and _errorCode_ should be ignored. If NO, you may want to re-try the request again after checking that the user has a valid internet connection. This could also indicate a temporary problem with the Foursquare servers.
 
+Using the example application
+=============
+The example application can be used as a simple reference for how to use the FSOAuth in your class, as well as a basic test to make sure your client id and secret is working properly.
+
+The app will present you with fields to enter your client id, client secret, and callback URL. It has two buttons. The first initates the fast app switch to the Foursquare app and gets the access code. The second converts a received access code to a token by contacting the Foursquare servers. This will only work after first successfully receiving an access code from the initial Foursquare fast app switch.
+
+The app itself uses "fsoauthexample" as its schema. If you want to be redirected back to it after the fast app switch (instead of to your own app) you will need to add an fsoauthexample redirect URI to your app's settings on foursquare.com (or change the Info.plist and FSViewController.m's handleURL: method to match one of your existing redirect schemas). This is necessary for the code -> token conversion functionality to work.
+
+In your own application you should hard code all these values. Your client secret should be stored only on your own server, if possible, and not included in the app at all.
 
 More Information
 ================
