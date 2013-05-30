@@ -42,7 +42,7 @@
                                                                                                                (CFStringRef)@"!*'();:@&=+$,/?%#[]",
                                                                                                                kCFStringEncodingUTF8);
     
-    NSURL *authURL = [NSURL URLWithString:[NSString stringWithFormat:@"fsqauth://authorize?client_id=%@&v=%@&redirect_uri=%@", clientID, kFoursquareOAuthRequiredVersion, urlEncodedCallbackString]];
+    NSURL *authURL = [NSURL URLWithString:[NSString stringWithFormat:@"foursquareauth://authorize?client_id=%@&v=%@&redirect_uri=%@", clientID, kFoursquareOAuthRequiredVersion, urlEncodedCallbackString]];
     
     if (![sharedApplication canOpenURL:authURL]) {
         [sharedApplication openURL:[NSURL URLWithString:kFoursquareAppStoreURL]];
