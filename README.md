@@ -1,7 +1,7 @@
 foursquare-ios-oauth
 ====================
 
-Foursquare native authentication makes it easier for your app's users to connect to Foursquare. If the user already has the Foursquare app installed on their device, it will use their existing credentials from the app instead of presenting the user with another login screen.
+Foursquare native authentication makes it easier for your app's users to connect with Foursquare. Unlike web-based OAuth, native authentication re-uses the Foursquare app's user credentials, saving users the hassle of re-logging in to Foursquare within your app.
 
 This repo includes a helper class (`FSOAuth`) that can be used as-is in your own app. It also includes a simple test application as an example of how to use the class.
 
