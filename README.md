@@ -9,7 +9,7 @@ This repo includes a helper class (`FSOAuth`) that can be used as-is in your own
 Setting up FSOAuth with your app
 =================================
 
-1. Enter your app's callback URL at [http://foursquare.com/developers/apps](http://foursquare.com/developers/apps) in the "Redirect URI(s)" field. (You can add multiple URIs in this field; separate them with commas.)
+1. Enter your app's custom URL scheme callback (e.g. yourappname://foursquare) at [http://foursquare.com/developers/apps](http://foursquare.com/developers/apps) in the "Redirect URI(s)" field. You can add multiple URIs in this field; separate them with commas.
 
 2. Add your callback URL scheme to your app's `Info.plist` file (in the URL types field).
 
