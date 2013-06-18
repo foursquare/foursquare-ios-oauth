@@ -58,7 +58,7 @@ The possible error code values are:
 
 This method will initiate an asynchronous network request to Foursquare to convert a user's access code into an auth token.
 
-*WARNING:* For security reasons, it is recommended that you not use this method if possible. You should pass the returned accessCode to your own server and have it contact the Foursquare server to convert the code to an access token instead of including your client secret in your app's binary. However, this helper method is provided for you to use if this is not possible for your app.
+*WARNING:* For security reasons, it is recommended that you not use this method if possible. You should pass the returned accessCode to your own server and have it contact the Foursquare server to [convert the code to an access token](https://developer.foursquare.com/overview/auth#code) instead of including your client secret in your app's binary. However, this helper method is provided for you to use if this is not possible for your app.
 
 Call this method with the access code returned to you by `+accessCodeForFSOAuthURL:error:` along with your app's Foursquare client ID, callback string, and client secret. The callback URI must be the same one that was used to generate the access code.
 
