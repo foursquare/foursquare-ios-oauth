@@ -42,6 +42,8 @@ This method has five possible return values:
 
 Call this method when you receive the callback from Foursquare, passing in the `NSURL` object you received. It will parse out the access code and error code (if any) from the URL's parameters and return them to you.
 
+NOTE: Your app may receive access code callbacks that it did not initiate (e.g. by a user initially choosing to connect to your app via a screen in the Foursquare app). Therefore you should not rely on your app being in any particular state when your callback is received.
+
 The possible error code values are:
 
 * **FSOAuthErrorNone** There was no error and the access code was read successfully.
