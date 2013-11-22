@@ -18,10 +18,17 @@
 
 #define kFoursquareOAuthRequiredVersion @"20130509"
 #define kFoursquareAppStoreURL @"https://itunes.apple.com/app/foursquare/id306934924?mt=8"
+#define kFoursquareAppStoreID @306934924
+
+#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 60000)
+#import <StoreKit/StoreKit.h>
+#endif
 
 @implementation FSOAuth
 
-+ (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID callbackURIString:(NSString *)callbackURIString {
++ (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID
+                              callbackURIString:(NSString *)callbackURIString
+                           allowShowingAppStore:(BOOL)allowShowingAppStore {
     if ([clientID length] <= 0) {
         return FSOAuthStatusErrorInvalidClientID;
     }
@@ -32,7 +39,10 @@
     }
     
     if (![sharedApplication canOpenURL:[NSURL URLWithString:@"foursquare://"]]) {
-        [sharedApplication openURL:[NSURL URLWithString:kFoursquareAppStoreURL]];
+        if (allowShowingAppStore) {
+            [self launchAppStoreOrShowStoreKitModal];
+        }
+
         return FSOAuthStatusErrorFoursquareNotInstalled;
     }
     
@@ -45,7 +55,10 @@
     NSURL *authURL = [NSURL URLWithString:[NSString stringWithFormat:@"foursquareauth://authorize?client_id=%@&v=%@&redirect_uri=%@", clientID, kFoursquareOAuthRequiredVersion, urlEncodedCallbackString]];
     
     if (![sharedApplication canOpenURL:authURL]) {
-        [sharedApplication openURL:[NSURL URLWithString:kFoursquareAppStoreURL]];
+        if (allowShowingAppStore) {
+            [self launchAppStoreOrShowStoreKitModal];
+        }
+        
         return FSOAuthStatusErrorFoursquareOAuthNotSupported;
     }
     
@@ -146,5 +159,43 @@
         }];
     }
 }
-     
+
++ (void)launchAppStoreOrShowStoreKitModal {
+#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 60000)
+    if ([SKStoreProductViewController class]) {
+        SKStoreProductViewController *storeViewController = [SKStoreProductViewController new];
+        storeViewController.delegate = (id<SKStoreProductViewControllerDelegate>)self;
+        [storeViewController loadProductWithParameters:@{SKStoreProductParameterITunesItemIdentifier : kFoursquareAppStoreID}
+                                       completionBlock:nil];
+        
+        UIViewController *controller = [UIApplication sharedApplication].keyWindow.rootViewController;
+        while (1) {
+            if ([controller isKindOfClass:[UITabBarController class]]) {
+                controller = ((UITabBarController *)controller).selectedViewController;
+            }
+            else if ([controller isKindOfClass:[UINavigationController class]]) {
+                controller = ((UINavigationController *)controller).visibleViewController;
+            }
+            else if (controller.presentedViewController) {
+                controller = controller.presentedViewController;
+            }
+            else {
+                break;
+            }
+        }
+        
+        [controller presentViewController:storeViewController animated:YES completion:nil];
+    }
+    else
+#endif
+    {
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:kFoursquareAppStoreURL]];
+    }
+}
+
+#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 60000)
++ (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController {
+    [viewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+#endif
 @end

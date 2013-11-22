@@ -49,14 +49,18 @@ typedef void (^FSTokenRequestCompletionBlock)(NSString *authToken, BOOL requestC
 /**
  Attempt to initiate OAuth request by bouncing user out to the native iOS Foursquare app.
  
- May return with an error code if passed in parameters are invalid. 
- Will launch into the Foursquare page on the App Store if Foursquare is not installed or outdated.
+ May return with an error code if passed in parameters are invalid.
  
  @param clientID Your app's Foursquare clientID ( see http://foursquare.com/developers/apps )
  @param callbackURIString Your app's callback ( must be registered as a Redirect URI with Foursquare, see http://foursquare.com/developers/apps )
+ @param allowShowingAppStore If YES and Foursquare is not installed or the installed version is outdated,
+                             it will launch into the app store (or open an app store modal sheet if running on iOS 6 or later)
+                             in addition to returning FSOAuthStatusErrorFoursquareNotInstalled or FSOAuthStatusErrorFoursquareOAuthNotSupported.
  @return Success or one of several failure codes. See enum definition above
  */
-+ (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID callbackURIString:(NSString *)callbackURIString;
++ (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID
+                              callbackURIString:(NSString *)callbackURIString
+                           allowShowingAppStore:(BOOL)allowShowingAppStore;
 
 /**
  Given the OAuth response URL, will return the access code for the authorized user, or nil if there was an error in authorization.
@@ -91,9 +95,9 @@ typedef void (^FSTokenRequestCompletionBlock)(NSString *authToken, BOOL requestC
  @warning For security reasons, it is recommended that you not use this method if possible.
  */
 + (void)requestAccessTokenForCode:(NSString *)accessCode
-                  clientId:(NSString *)clientID
-         callbackURIString:(NSString *)callbackURIString
-              clientSecret:(NSString *)clientSecret
+                         clientId:(NSString *)clientID
+                callbackURIString:(NSString *)callbackURIString
+                     clientSecret:(NSString *)clientSecret
                   completionBlock:(FSTokenRequestCompletionBlock)completionBlock;
 
 @end

@@ -21,6 +21,7 @@
 		F10698C91729B70E0053AF0B /* FSOAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = F10698C81729B70E0053AF0B /* FSOAuth.m */; };
 		F175C8E01739BB7E007D7FF9 /* connect-blue.png in Resources */ = {isa = PBXBuildFile; fileRef = F175C8DE1739BB7E007D7FF9 /* connect-blue.png */; };
 		F175C8E11739BB7E007D7FF9 /* connect-blue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F175C8DF1739BB7E007D7FF9 /* connect-blue@2x.png */; };
+		F189B5FD183EA2ED009FB6B0 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F189B5FC183EA2ED009FB6B0 /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		F10698C81729B70E0053AF0B /* FSOAuth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FSOAuth.m; path = ../../FSOAuth.m; sourceTree = "<group>"; };
 		F175C8DE1739BB7E007D7FF9 /* connect-blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "connect-blue.png"; sourceTree = "<group>"; };
 		F175C8DF1739BB7E007D7FF9 /* connect-blue@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "connect-blue@2x.png"; sourceTree = "<group>"; };
+		F189B5FC183EA2ED009FB6B0 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F189B5FD183EA2ED009FB6B0 /* StoreKit.framework in Frameworks */,
 				F10698A51729B6F50053AF0B /* UIKit.framework in Frameworks */,
 				F10698A71729B6F50053AF0B /* Foundation.framework in Frameworks */,
 				F10698A91729B6F50053AF0B /* CoreGraphics.framework in Frameworks */,
@@ -80,6 +83,7 @@
 		F10698A31729B6F50053AF0B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F189B5FC183EA2ED009FB6B0 /* StoreKit.framework */,
 				F10698A41729B6F50053AF0B /* UIKit.framework */,
 				F10698A61729B6F50053AF0B /* Foundation.framework */,
 				F10698A81729B6F50053AF0B /* CoreGraphics.framework */,
@@ -147,6 +151,11 @@
 				CLASSPREFIX = FS;
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = Foursquare;
+				TargetAttributes = {
+					F10698A01729B6F50053AF0B = {
+						DevelopmentTeam = ABUPJG7JQ3;
+					};
+				};
 			};
 			buildConfigurationList = F106989C1729B6F50053AF0B /* Build configuration list for PBXProject "FSExampleOAuth" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -275,10 +284,13 @@
 		F10698C51729B6F50053AF0B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FSExampleOAuth/FSExampleOAuth-Prefix.pch";
 				INFOPLIST_FILE = "FSExampleOAuth/FSExampleOAuth-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -286,10 +298,13 @@
 		F10698C61729B6F50053AF0B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FSExampleOAuth/FSExampleOAuth-Prefix.pch";
 				INFOPLIST_FILE = "FSExampleOAuth/FSExampleOAuth-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

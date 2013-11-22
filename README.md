@@ -22,7 +22,7 @@ Using FSOAuth
 FSOAuth has three primary methods.
 
 ```objc
-+ (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID callbackURIString:(NSString *)callbackURIString;
++ (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID callbackURIString:(NSString *)callbackURIString allowShowingAppStore:(BOOL)allowShowingAppStore;
 ```
 Call this method with your app's client ID and callback string to authorize a user with Foursquare. If a current version of the Foursquare app is installed, it will bounce the user out to that app and present them with an authorization dialog. After the user chooses Accept or Deny, your app will receive a callback at the url specified with the accessCode for the user attached. 
 
@@ -33,8 +33,10 @@ This method has five possible return values:
 * **FSOAuthStatusSuccess** The OAuth request was successfully initiated. The user has been bounced out to the Foursquare iOS app to approve or deny authorizing your app.
 * **FSOAuthStatusErrorInvalidClientID** You did not provide a valid client ID to the method.
 * **FSOAuthStatusErrorInvalidCallback** You did not provide a valid callback string that has been registered with the system.
-* **FSOAuthStatusErrorFoursquareNotInstalled** Foursquare is not installed on the user's iOS device. They have been bounced out to the Foursquare app page on the App Store.
-* **FSOAuthStatusErrorFoursquareOAuthNotSupported** The version of the Foursquare app installed on the user's iOS device is too old to support native auth. They have been bounced out to the Foursquare app page on the App Store.
+* **FSOAuthStatusErrorFoursquareNotInstalled** Foursquare is not installed on the user's iOS device.
+* **FSOAuthStatusErrorFoursquareOAuthNotSupported** The version of the Foursquare app installed on the user's iOS device is too old to support native auth.
+
+If the allowShowingAppStore param is set to YES, then when returning FSOAuthStatusErrorFoursquareNotInstalled or FSOAuthStatusErrorFoursquareOAuthNotSupported, this method will present the user with the Foursquare app's page on the App Store so that the may easily install or update the app (by bouncing them out to the App Store app, or by presenting a modal StoreKit sheet if running on iOS 6+ and compiled with at least the iOS 6 SDK). If you pass NO, you should manually handle these two return values appropriately.
 
 ```objc
 + (NSString *)accessCodeForFSOAuthURL:(NSURL *)url error:(FSOAuthErrorCode *)errorCode;

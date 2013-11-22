@@ -29,7 +29,9 @@
 
     [self dismissKeyboard:nil];
     
-    FSOAuthStatusCode statusCode = [FSOAuth authorizeUserUsingClientId:self.clientIdField.text callbackURIString:self.callbackUrlField.text];
+    FSOAuthStatusCode statusCode = [FSOAuth authorizeUserUsingClientId:self.clientIdField.text
+                                                     callbackURIString:self.callbackUrlField.text
+                                                  allowShowingAppStore:YES];
     
     NSString *resultText = nil;
     
