@@ -211,4 +211,24 @@
     return urlEncodedString;
 }
 
++ (void)sendAsynchronousRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLResponse *response, NSData *data, NSError *error))completionHandler
+{
+    // Introduced in iOS 7, NSURLSession replaces NSURLConnection (deprecated in iOS 9).
+    if ([NSURLSession class]) {
+        [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            if (completionHandler) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completionHandler(response, data, error);
+                });
+            }
+        }] resume];
+    }
+    else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:completionHandler];
+#pragma clang diagnostic pop
+    }
+}
+
 @end
