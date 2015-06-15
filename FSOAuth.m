@@ -46,11 +46,7 @@
         return FSOAuthStatusErrorFoursquareNotInstalled;
     }
     
-    NSString *urlEncodedCallbackString = (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                                                                                                               (CFStringRef)callbackURIString,
-                                                                                                               NULL,
-                                                                                                               (CFStringRef)@"!*'();:@&=+$,/?%#[]",
-                                                                                                               kCFStringEncodingUTF8);
+    NSString *urlEncodedCallbackString = [self urlEncodedStringForString:callbackURIString];
     
     NSURL *authURL = [NSURL URLWithString:[NSString stringWithFormat:@"foursquareauth://authorize?client_id=%@&v=%@&redirect_uri=%@", clientID, kFoursquareOAuthRequiredVersion, urlEncodedCallbackString]];
     
@@ -131,11 +127,7 @@
         && [clientSecret length] > 0
         && completionBlock) {
         
-        NSString *urlEncodedCallbackString = (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                                                                                                                   (CFStringRef)callbackURIString,
-                                                                                                                   NULL,
-                                                                                                                   (CFStringRef)@"!*'();:@&=+$,/?%#[]",
-                                                                                                                   kCFStringEncodingUTF8);
+        NSString *urlEncodedCallbackString = [self urlEncodedStringForString:callbackURIString];
         
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://foursquare.com/oauth2/access_token?client_id=%@&client_secret=%@&grant_type=authorization_code&redirect_uri=%@&code=%@", clientID, clientSecret, urlEncodedCallbackString, accessCode]]];
         
