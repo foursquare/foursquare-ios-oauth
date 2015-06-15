@@ -198,4 +198,25 @@
     [viewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 #endif
+
++ (NSString *)urlEncodedStringForString:(NSString *)string {
+    NSString *urlEncodedString = nil;
+    // Introduced in iOS 7, -stringByAddingPercentEncodingWithAllowedCharacters: replaces CFURLCreateStringByAddingPercentEscapes (deprecated in iOS 9).
+    if ([NSString instancesRespondToSelector:@selector(stringByAddingPercentEncodingWithAllowedCharacters:)]) {
+        urlEncodedString = [string stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    }
+    else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        urlEncodedString = (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
+                                                                                                           (CFStringRef)string,
+                                                                                                           NULL,
+                                                                                                           (CFStringRef)@"!*'();:@&=+$,/?%#[]",
+                                                                                                           kCFStringEncodingUTF8);
+#pragma clang diagnostic pop
+    }
+    
+    return urlEncodedString;
+}
+
 @end
