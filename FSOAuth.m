@@ -131,7 +131,7 @@
         
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://foursquare.com/oauth2/access_token?client_id=%@&client_secret=%@&grant_type=authorization_code&redirect_uri=%@&code=%@", clientID, clientSecret, urlEncodedCallbackString, accessCode]]];
         
-        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        [self sendAsynchronousRequest:request completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
             if (data && [[response MIMEType] isEqualToString:@"application/json"]) {
                 id jsonObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
                 if ([jsonObj isKindOfClass:[NSDictionary class]]) {
