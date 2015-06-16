@@ -46,11 +46,7 @@
         return FSOAuthStatusErrorFoursquareNotInstalled;
     }
     
-    NSString *urlEncodedCallbackString = (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                                                                                                               (CFStringRef)callbackURIString,
-                                                                                                               NULL,
-                                                                                                               (CFStringRef)@"!*'();:@&=+$,/?%#[]",
-                                                                                                               kCFStringEncodingUTF8);
+    NSString *urlEncodedCallbackString = [self urlEncodedStringForString:callbackURIString];
     
     NSURL *authURL = [NSURL URLWithString:[NSString stringWithFormat:@"foursquareauth://authorize?client_id=%@&v=%@&redirect_uri=%@", clientID, kFoursquareOAuthRequiredVersion, urlEncodedCallbackString]];
     
@@ -131,15 +127,11 @@
         && [clientSecret length] > 0
         && completionBlock) {
         
-        NSString *urlEncodedCallbackString = (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                                                                                                                   (CFStringRef)callbackURIString,
-                                                                                                                   NULL,
-                                                                                                                   (CFStringRef)@"!*'();:@&=+$,/?%#[]",
-                                                                                                                   kCFStringEncodingUTF8);
+        NSString *urlEncodedCallbackString = [self urlEncodedStringForString:callbackURIString];
         
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://foursquare.com/oauth2/access_token?client_id=%@&client_secret=%@&grant_type=authorization_code&redirect_uri=%@&code=%@", clientID, clientSecret, urlEncodedCallbackString, accessCode]]];
         
-        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        [self sendAsynchronousRequest:request completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
             if (data && [[response MIMEType] isEqualToString:@"application/json"]) {
                 id jsonObj = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
                 if ([jsonObj isKindOfClass:[NSDictionary class]]) {
@@ -198,4 +190,45 @@
     [viewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 #endif
+
++ (NSString *)urlEncodedStringForString:(NSString *)string {
+    NSString *urlEncodedString = nil;
+    // Introduced in iOS 7, -stringByAddingPercentEncodingWithAllowedCharacters: replaces CFURLCreateStringByAddingPercentEscapes (deprecated in iOS 9).
+    if ([NSString instancesRespondToSelector:@selector(stringByAddingPercentEncodingWithAllowedCharacters:)]) {
+        urlEncodedString = [string stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    }
+    else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        urlEncodedString = (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
+                                                                                                           (CFStringRef)string,
+                                                                                                           NULL,
+                                                                                                           (CFStringRef)@"!*'();:@&=+$,/?%#[]",
+                                                                                                           kCFStringEncodingUTF8);
+#pragma clang diagnostic pop
+    }
+    
+    return urlEncodedString;
+}
+
++ (void)sendAsynchronousRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLResponse *response, NSData *data, NSError *error))completionHandler
+{
+    // Introduced in iOS 7, NSURLSession replaces NSURLConnection (deprecated in iOS 9).
+    if ([NSURLSession class]) {
+        [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            if (completionHandler) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completionHandler(response, data, error);
+                });
+            }
+        }] resume];
+    }
+    else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:completionHandler];
+#pragma clang diagnostic pop
+    }
+}
+
 @end
