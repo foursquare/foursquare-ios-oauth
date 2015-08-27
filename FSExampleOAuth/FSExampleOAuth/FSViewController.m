@@ -29,8 +29,10 @@
 
     [self dismissKeyboard:nil];
     
+    // The testing app currently does not support universal url callbacks
     FSOAuthStatusCode statusCode = [FSOAuth authorizeUserUsingClientId:self.clientIdField.text
-                                                     callbackURIString:self.callbackUrlField.text
+                                               nativeURICallbackString:self.callbackUrlField.text
+                                            universalURICallbackString:nil
                                                   allowShowingAppStore:YES];
     
     NSString *resultText = nil;
