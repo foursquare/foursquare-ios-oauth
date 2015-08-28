@@ -53,13 +53,12 @@ typedef void (^FSTokenRequestCompletionBlock)(NSString *authToken, BOOL requestC
  
  @param clientID             Your app's Foursquare clientID ( see http://foursquare.com/developers/apps )
  @param nativeURICallbackString    Your app's native scheme URL callback if you are supporting iOS 8 and below
- @param universalURICallbackString Your app's universal link URL callback if you are supporting iOS 9 and up.
+ @param universalURICallbackString Your app's universal link URL callback if you are supporting iOS 9 and up and want
+ to use universal links.
  @param allowShowingAppStore If YES and Foursquare is not installed or the installed version is outdated,
                              it will launch into the app store (or open an app store modal sheet if running on iOS 6 or later)
                              in addition to returning FSOAuthStatusErrorFoursquareNotInstalled or FSOAuthStatusErrorFoursquareOAuthNotSupported.
  @return Success or one of several failure codes. See enum definition above
- 
- @note If your app runs on iOS 9 or greater, you must support universal links for your callback.
  
  @note If your app runs on iOS 8 or lower, you must support native url schemes for your callback.
  

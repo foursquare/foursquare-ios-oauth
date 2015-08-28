@@ -31,7 +31,7 @@ FSOAuth has three primary methods.
 ```
 Call this method with your app's client ID and callback string(s) to authorize a user with Foursquare. If a current version of the Foursquare app is installed, it will bounce the user out to that app and present them with an authorization dialog. After the user chooses Accept or Deny, your app will receive a callback at the url specified with the accessCode for the user attached. 
 
-The method will automatically select the correct callback string to use based on what version of iOS your app is running on. If you are on iOS 9 or greater you _MUST_ support universal links and use that as your callback. If you are on iOS 8 or lower you _MUST_ support native URL schemes.
+The method will automatically select the correct callback string to use based on what version of iOS your app is running on. If your app runs on iOS 8 or lower you _MUST_ support native URL schemes. If you are on iOS 9 or greater you may just use native scheme, but it is recommended you also provide a universal link callback if possible.
 
 Note: Your callbacks _MUST_ be added to the "Redirect URI(s)" field at [http://foursquare.com/developers/apps](http://foursquare.com/developers/apps) or users will see an error message instead of the authorization prompt.
 
