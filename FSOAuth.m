@@ -27,35 +27,81 @@
 @implementation FSOAuth
 
 + (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID
-                              callbackURIString:(NSString *)callbackURIString
+                        nativeURICallbackString:(NSString *)nativeURICallbackString
+                     universalURICallbackString:(NSString *)universalURICallbackString
                            allowShowingAppStore:(BOOL)allowShowingAppStore {
     if ([clientID length] <= 0) {
         return FSOAuthStatusErrorInvalidClientID;
     }
 
     UIApplication *sharedApplication = [UIApplication sharedApplication];
-    if ([callbackURIString length] <= 0 || ![sharedApplication canOpenURL:[NSURL URLWithString:callbackURIString]]) {
+    BOOL hasNativeCallback = ([nativeURICallbackString length] > 0);
+    BOOL hasUniversalCallback = ([universalURICallbackString length] > 0);
+    
+    if (!hasNativeCallback && !hasUniversalCallback) {
         return FSOAuthStatusErrorInvalidCallback;
     }
-    
-    if (![sharedApplication canOpenURL:[NSURL URLWithString:@"foursquare://"]]) {
-        if (allowShowingAppStore) {
-            [self launchAppStoreOrShowStoreKitModal];
-        }
 
-        return FSOAuthStatusErrorFoursquareNotInstalled;
+    if (hasUniversalCallback) {
+        NSString *urlScheme = [[NSURL URLWithString:universalURICallbackString] scheme];
+        if (![urlScheme isEqualToString:@"http"] 
+            && ![urlScheme isEqualToString:@"https"]) {
+            return FSOAuthStatusErrorInvalidCallback;
+        }
+    }
+
+    BOOL universalLinksSupported = NO;
+#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
+    NSProcessInfo *processInfo = [NSProcessInfo processInfo];
+    if ([processInfo respondsToSelector:@selector(isOperatingSystemAtLeastVersion:)]) {
+        NSOperatingSystemVersion minVersion;
+        minVersion.majorVersion = 9;
+        minVersion.minorVersion = 0;
+        minVersion.patchVersion = 0;
+        if ([processInfo isOperatingSystemAtLeastVersion:minVersion]) {
+            universalLinksSupported = YES;
+        }
+    }
+#endif
+    
+    if (!universalLinksSupported && !hasNativeCallback) {
+        return FSOAuthStatusErrorInvalidCallback;
+    }
+
+    if (!universalLinksSupported) {
+        if (![sharedApplication canOpenURL:[NSURL URLWithString:@"foursquare://"]]) {
+            if (allowShowingAppStore) {
+                [self launchAppStoreOrShowStoreKitModal];
+            }
+            
+            return FSOAuthStatusErrorFoursquareNotInstalled;
+        }
     }
     
-    NSString *urlEncodedCallbackString = [self urlEncodedStringForString:callbackURIString];
+    NSURL *authURL = nil;
     
-    NSURL *authURL = [NSURL URLWithString:[NSString stringWithFormat:@"foursquareauth://authorize?client_id=%@&v=%@&redirect_uri=%@", clientID, kFoursquareOAuthRequiredVersion, urlEncodedCallbackString]];
-    
-    if (![sharedApplication canOpenURL:authURL]) {
-        if (allowShowingAppStore) {
-            [self launchAppStoreOrShowStoreKitModal];
+    if (universalLinksSupported) {
+        NSString *urlEncodedCallbackString = nil;
+        if (hasUniversalCallback) {
+            urlEncodedCallbackString = [self urlEncodedStringForString:universalURICallbackString];
         }
+        else {
+            urlEncodedCallbackString = [self urlEncodedStringForString:nativeURICallbackString];}
         
-        return FSOAuthStatusErrorFoursquareOAuthNotSupported;
+        authURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.foursquare.com/oauth2/authenticate?client_id=%@&v=%@&redirect_uri=%@&response_type=code", clientID, kFoursquareOAuthRequiredVersion, urlEncodedCallbackString]];
+    }
+    else {
+        NSString *urlEncodedCallbackString = [self urlEncodedStringForString:nativeURICallbackString];
+        
+        authURL = [NSURL URLWithString:[NSString stringWithFormat:@"foursquareauth://authorize?client_id=%@&v=%@&redirect_uri=%@", clientID, kFoursquareOAuthRequiredVersion, urlEncodedCallbackString]];
+        
+        if (![sharedApplication canOpenURL:authURL]) {
+            if (allowShowingAppStore) {
+                [self launchAppStoreOrShowStoreKitModal];
+            }
+            
+            return FSOAuthStatusErrorFoursquareOAuthNotSupported;
+        }
     }
     
     [sharedApplication openURL:authURL];

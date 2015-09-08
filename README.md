@@ -9,9 +9,11 @@ This repo includes a helper class (`FSOAuth`) that can be used as-is in your own
 Setting up FSOAuth with your app
 =================================
 
-1. Enter your app's custom URL scheme callback (e.g. yourappname://foursquare) at [http://foursquare.com/developers/apps](http://foursquare.com/developers/apps) in the "Redirect URI(s)" field. You can add multiple URIs in this field; separate them with commas.
+1. At [http://foursquare.com/developers/apps](http://foursquare.com/developers/apps) enter the URL callback in the "Redirect URI(s)" field that you wish to Foursquare to use to return users to your app after authenticating. You can add multiple URIs in this field, separate them with commas. To support iOS 9, you will have to use a universal link (`http` or `https`). To support earlier iOS versions you will need to use a native custom URL scheme (e.g. `yourappname://foursquare`). If possible you should support both types of URL and register both as your redirect URIs.
 
-2. Add your callback URL scheme to your app's `Info.plist` file (in the URL types field).
+2. If you are supporting native URL schemes (iOS 8 and below), add your callback URL scheme to your app's `Info.plist` file (in the URL types field).
+
+3. If you are supporting universal links, you will need to set up your callback url appropriately. See [Apple's documentation](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html#//apple_ref/doc/uid/TP40016308-CH12) for more information.
 
 3. Add `FSOAuth.{h,m}` to your Xcode project. If you are using git for version control in your app, we recommend adding this repo as a submodule to yours to make it easier to get future updates. FSOAuth can be added to a project using [CocoaPods](https://github.com/cocoapods/cocoapods).
 
@@ -22,11 +24,16 @@ Using FSOAuth
 FSOAuth has three primary methods.
 
 ```objc
-+ (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID callbackURIString:(NSString *)callbackURIString allowShowingAppStore:(BOOL)allowShowingAppStore;
++ (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID
+                        nativeURICallbackString:(NSString *)nativeURICallbackString
+                     universalURICallbackString:(NSString *)universalURICallbackString
+                           allowShowingAppStore:(BOOL)allowShowingAppStore;
 ```
-Call this method with your app's client ID and callback string to authorize a user with Foursquare. If a current version of the Foursquare app is installed, it will bounce the user out to that app and present them with an authorization dialog. After the user chooses Accept or Deny, your app will receive a callback at the url specified with the accessCode for the user attached. 
+Call this method with your app's client ID and callback string(s) to authorize a user with Foursquare. If a current version of the Foursquare app is installed, it will bounce the user out to that app and present them with an authorization dialog. After the user chooses Accept or Deny, your app will receive a callback at the url specified with the accessCode for the user attached. 
 
-Note: Your callback _MUST_ be added to the "Redirect URI(s)" field at [http://foursquare.com/developers/apps](http://foursquare.com/developers/apps) or users will see an error message instead of the authorization prompt.
+The method will automatically select the correct callback string to use based on what version of iOS your app is running on. If your app runs on iOS 8 or lower you _MUST_ support native URL schemes. If you are on iOS 9 or greater you may just use native scheme, but it is recommended you also provide a universal link callback if possible.
+
+Note: Your callbacks _MUST_ be added to the "Redirect URI(s)" field at [http://foursquare.com/developers/apps](http://foursquare.com/developers/apps) or users will see an error message instead of the authorization prompt.
 
 This method has five possible return values:
 
@@ -34,12 +41,15 @@ This method has five possible return values:
 * **FSOAuthStatusErrorInvalidClientID** You did not provide a valid client ID to the method.
 * **FSOAuthStatusErrorInvalidCallback** You did not provide a valid callback string that has been registered with the system.
 * **FSOAuthStatusErrorFoursquareNotInstalled** Foursquare is not installed on the user's iOS device.
-* **FSOAuthStatusErrorFoursquareOAuthNotSupported** The version of the Foursquare app installed on the user's iOS device is too old to support native auth.
+* **FSOAuthStatusErrorFoursquareOAuthNotSupported** The version of the Foursquare app installed on the user's iOS device is too old to support native auth. 
 
-If the allowShowingAppStore param is set to YES, then when returning FSOAuthStatusErrorFoursquareNotInstalled or FSOAuthStatusErrorFoursquareOAuthNotSupported, this method will present the user with the Foursquare app's page on the App Store so that the may easily install or update the app (by bouncing them out to the App Store app, or by presenting a modal StoreKit sheet if running on iOS 6+ and compiled with at least the iOS 6 SDK). If you pass NO, you should manually handle these two return values appropriately.
+If running on iOS 9 or above, you will not be able to get `NotInstalled` or `NotSupported` return values, as apps can no longer freely check what URL schemes are registered with the system. Instead, if an appropriate version of the Foursquare app is not installed, the web version of the Foursquare OAuth page will open in Safari.
+
+If the `allowShowingAppStore` param is set to YES, then when returning `FSOAuthStatusErrorFoursquareNotInstalled` or `FSOAuthStatusErrorFoursquareOAuthNotSupported`, this method will present the user with the Foursquare app's page on the App Store so that the may easily install or update the app (by bouncing them out to the App Store app, or by presenting a modal StoreKit sheet if running on iOS 6+ and compiled with at least the iOS 6 SDK). If you pass NO, you should manually handle these two return values appropriately.
 
 ```objc
-+ (NSString *)accessCodeForFSOAuthURL:(NSURL *)url error:(FSOAuthErrorCode *)errorCode;
++ (NSString *)accessCodeForFSOAuthURL:(NSURL *)url 
++                               error:(FSOAuthErrorCode *)errorCode;
 ```
 
 Call this method when you receive the callback from Foursquare, passing in the `NSURL` object you received. It will parse out the access code and error code (if any) from the URL's parameters and return them to you.
@@ -88,6 +98,8 @@ The app will present you with fields to enter your client id, client secret, and
 The app itself uses "fsoauthexample" as its schema. If you want to be redirected back to it after the fast app switch (instead of to your own app) you will need to add an fsoauthexample redirect URI to your app's settings on foursquare.com (or change the `Info.plist` and `FSViewController.m`'s `-handleURL:` method to match one of your existing redirect schemas). This is necessary for the code → token conversion functionality to work.
 
 You should hard code all these values in your own application. Your client secret should be stored only on your own server, if possible, and not included in the app at all.
+
+The example application currently does not support iOS 9+
 
 More Information
 ================
