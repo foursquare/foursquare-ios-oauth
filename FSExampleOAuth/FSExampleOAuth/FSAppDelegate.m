@@ -21,8 +21,20 @@
 @implementation FSAppDelegate
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    // URL scheme-based implementation of FSOAuth
     [self.viewController handleURL:url];
     return YES;
+}
+
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
+{
+    BOOL didHandle = NO;
+    if ([userActivity.activityType isEqual:NSUserActivityTypeBrowsingWeb]) {
+        // Universal link implementation of FSOAuth
+        [self.viewController handleURL:userActivity.webpageURL];
+        didHandle = YES;
+    }
+    return didHandle;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
