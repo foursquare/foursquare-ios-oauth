@@ -32,7 +32,7 @@
     // The testing app currently does not support universal url callbacks
     FSOAuthStatusCode statusCode = [FSOAuth authorizeUserUsingClientId:self.clientIdField.text
                                                nativeURICallbackString:self.callbackUrlField.text
-                                            universalURICallbackString:nil
+                                            universalURICallbackString:self.universalLinkCallbackUrlField.text
                                                   allowShowingAppStore:YES];
     
     NSString *resultText = nil;

@@ -21,6 +21,7 @@
 
 @property (weak, nonatomic) IBOutlet UITextField *clientIdField;
 @property (weak, nonatomic) IBOutlet UITextField *callbackUrlField;
+@property (weak, nonatomic) IBOutlet UITextField *universalLinkCallbackUrlField;
 @property (weak, nonatomic) IBOutlet UILabel *resultLabel;
 
 @property (weak, nonatomic) IBOutlet UITextField *clientSecretField;
