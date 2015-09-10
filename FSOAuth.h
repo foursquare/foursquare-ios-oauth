@@ -58,6 +58,7 @@ typedef void (^FSTokenRequestCompletionBlock)(NSString *authToken, BOOL requestC
  @param allowShowingAppStore If YES and Foursquare is not installed or the installed version is outdated,
                              it will launch into the app store (or open an app store modal sheet if running on iOS 6 or later)
                              in addition to returning FSOAuthStatusErrorFoursquareNotInstalled or FSOAuthStatusErrorFoursquareOAuthNotSupported.
+                             This parameter has no effect if running on iOS 9 or above.
  @return Success or one of several failure codes. See enum definition above
  
  @note If your app runs on iOS 8 or lower, you must support native url schemes for your callback.

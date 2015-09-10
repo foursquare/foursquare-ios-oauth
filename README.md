@@ -45,7 +45,7 @@ This method has five possible return values:
 
 If running on iOS 9 or above, you will not be able to get `NotInstalled` or `NotSupported` return values, as apps can no longer freely check what URL schemes are registered with the system. Instead, if an appropriate version of the Foursquare app is not installed, the web version of the Foursquare OAuth page will open in Safari.
 
-If the `allowShowingAppStore` param is set to YES, then when returning `FSOAuthStatusErrorFoursquareNotInstalled` or `FSOAuthStatusErrorFoursquareOAuthNotSupported`, this method will present the user with the Foursquare app's page on the App Store so that the may easily install or update the app (by bouncing them out to the App Store app, or by presenting a modal StoreKit sheet if running on iOS 6+ and compiled with at least the iOS 6 SDK). If you pass NO, you should manually handle these two return values appropriately.
+If the `allowShowingAppStore` param is set to YES, then when returning `FSOAuthStatusErrorFoursquareNotInstalled` or `FSOAuthStatusErrorFoursquareOAuthNotSupported`, this method will present the user with the Foursquare app's page on the App Store so that the may easily install or update the app (by bouncing them out to the App Store app, or by presenting a modal StoreKit sheet if running on iOS 6+ and compiled with at least the iOS 6 SDK). If you pass NO, you should manually handle these two return values appropriately. This parameter has no effect if running on iOS 9 or later as there is no way to detect if Foursquare is installed when using universal links.
 
 ```objc
 + (NSString *)accessCodeForFSOAuthURL:(NSURL *)url 
