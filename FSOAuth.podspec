@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "FSOAuth"
-  s.version      = "1.2.0"
+  s.version      = "1.2"
   s.summary      = "Foursquare native auth makes it easier for users of your app to connect to Foursquare."
   s.homepage     = "http://developer.foursquare.com/"
   s.license      = 'Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0)'
