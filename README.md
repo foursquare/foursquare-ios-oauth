@@ -99,7 +99,7 @@ The app itself uses "fsoauthexample" as its schema. If you want to be redirected
 
 You should hard code all these values in your own application. Your client secret should be stored only on your own server, if possible, and not included in the app at all.
 
-The example application currently does not support iOS 9+
+The example application contains code showing you how to set up universal link callback handling. However as it has no matching https url that will launch it, you cannot actually use a universal link callback to go back to it out of the box. 
 
 More Information
 ================
