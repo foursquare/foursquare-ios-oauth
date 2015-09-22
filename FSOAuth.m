@@ -88,7 +88,7 @@
         else {
             urlEncodedCallbackString = [self urlEncodedStringForString:nativeURICallbackString];}
         
-        authURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.foursquare.com/oauth2/authenticate?client_id=%@&v=%@&redirect_uri=%@&response_type=code", clientID, kFoursquareOAuthRequiredVersion, urlEncodedCallbackString]];
+        authURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://foursquare.com/native/oauth2/authenticate?client_id=%@&redirect_uri=%@&response_type=code", clientID, urlEncodedCallbackString]];
     }
     else {
         NSString *urlEncodedCallbackString = [self urlEncodedStringForString:nativeURICallbackString];
