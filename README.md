@@ -103,4 +103,4 @@ The example application contains code showing you how to set up universal link c
 
 More Information
 ================
-See [https://developer.foursquare.com](https://developer.foursquare.com) for more information on how to use the Foursquare API.
+See [https://developer.foursquare.com](https://developer.foursquare.com) for more information on how to use the Foursquare API. foursquare-ios-oauth is currently maintained by Sam Grossberg ([@samgro](https://github.com/samgro)).
