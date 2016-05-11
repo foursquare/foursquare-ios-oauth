@@ -16,6 +16,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 typedef NS_ENUM(NSUInteger, FSOAuthStatusCode) {
     FSOAuthStatusSuccess,                           // Sucessfully initiated the OAuthRequest
     FSOAuthStatusErrorInvalidClientID,              // An invalid clientId was passed in
@@ -42,9 +44,16 @@ typedef NS_ENUM(NSUInteger, FSOAuthErrorCode) {
  @param requestCompleted Will be YES if the server was actually contacted and the response successfully downloaded, else NO
  @param errorCode Will be one of the values in the enum above. Only valid if requestCompleted is YES
  */
-typedef void (^FSTokenRequestCompletionBlock)(NSString *authToken, BOOL requestCompleted, FSOAuthErrorCode errorCode);
+typedef void (^FSTokenRequestCompletionBlock)(NSString * _Nullable authToken, BOOL requestCompleted, FSOAuthErrorCode errorCode);
 
 @interface FSOAuth : NSObject
+
+/**
+ FSOauth should be accessed within your app through this shared instance.
+ 
+ @return The shared instance of FSOauth.
+ */
++ (FSOAuth *)shared;
 
 /**
  Attempt to initiate OAuth request by bouncing user out to the native iOS Foursquare app.
@@ -59,16 +68,18 @@ typedef void (^FSTokenRequestCompletionBlock)(NSString *authToken, BOOL requestC
                              it will launch into the app store (or open an app store modal sheet if running on iOS 6 or later)
                              in addition to returning FSOAuthStatusErrorFoursquareNotInstalled or FSOAuthStatusErrorFoursquareOAuthNotSupported.
                              This parameter has no effect if running on iOS 9 or above.
+ @param presentFromViewController    The view controller that should present any view controllers this authorization might create (such as a webview)
  @return Success or one of several failure codes. See enum definition above
  
  @note If your app runs on iOS 8 or lower, you must support native url schemes for your callback.
  
  @note Your URI callbacks must be registered as a Redirect URI with Foursquare, see http://foursquare.com/developers/apps
  */
-+ (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID
-                        nativeURICallbackString:(NSString *)nativeURICallbackString
-                     universalURICallbackString:(NSString *)universalURICallbackString
-                           allowShowingAppStore:(BOOL)allowShowingAppStore;
+- (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID
+                        nativeURICallbackString:(nullable NSString *)nativeURICallbackString
+                     universalURICallbackString:(nullable NSString *)universalURICallbackString
+                           allowShowingAppStore:(BOOL)allowShowingAppStore
+                      presentFromViewController:(UIViewController *)presentFromViewController;
 
 /**
  Given the OAuth response URL, will return the access code for the authorized user, or nil if there was an error in authorization.
@@ -83,7 +94,7 @@ typedef void (^FSTokenRequestCompletionBlock)(NSString *authToken, BOOL requestC
                   See enum definition above for possible error code values.
  @return The access code for this user or nil if there was an error in authorization or parsing the URL.
  */
-+ (NSString *)accessCodeForFSOAuthURL:(NSURL *)url error:(FSOAuthErrorCode *)errorCode;
+- (nullable NSString *)accessCodeForFSOAuthURL:(NSURL *)url error:(nullable FSOAuthErrorCode *)errorCode;
 
 
 /**
@@ -102,10 +113,12 @@ typedef void (^FSTokenRequestCompletionBlock)(NSString *authToken, BOOL requestC
  
  @warning For security reasons, it is recommended that you not use this method if possible.
  */
-+ (void)requestAccessTokenForCode:(NSString *)accessCode
+- (void)requestAccessTokenForCode:(NSString *)accessCode
                          clientId:(NSString *)clientID
                 callbackURIString:(NSString *)callbackURIString
                      clientSecret:(NSString *)clientSecret
                   completionBlock:(FSTokenRequestCompletionBlock)completionBlock;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -27,9 +27,10 @@ FSOAuth has three primary methods.
 + (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID
                         nativeURICallbackString:(NSString *)nativeURICallbackString
                      universalURICallbackString:(NSString *)universalURICallbackString
-                           allowShowingAppStore:(BOOL)allowShowingAppStore;
+                           allowShowingAppStore:(BOOL)allowShowingAppStore
+            		  presentFromViewController:(UIViewController *)presentFromViewController;
 ```
-Call this method with your app's client ID and callback string(s) to authorize a user with Foursquare. If a current version of the Foursquare app is installed, it will bounce the user out to that app and present them with an authorization dialog. After the user chooses Accept or Deny, your app will receive a callback at the url specified with the accessCode for the user attached. 
+Call this method with your app's client ID and callback string(s) to authorize a user with Foursquare. On iOS 9 or greater, a webview will be presented; on iOS 8 or lower, if a current version of the Foursquare app is installed, it will bounce the user out to that app and present them with an authorization dialog. After the user chooses Accept or Deny, your app will receive a callback at the url specified with the accessCode for the user attached. 
 
 The method will automatically select the correct callback string to use based on what version of iOS your app is running on. If your app runs on iOS 8 or lower you _MUST_ support native URL schemes. If you are on iOS 9 or greater you may just use native scheme, but it is recommended you also provide a universal link callback if possible.
 
@@ -48,8 +49,8 @@ If running on iOS 9 or above, you will not be able to get `NotInstalled` or `Not
 If the `allowShowingAppStore` param is set to YES, then when returning `FSOAuthStatusErrorFoursquareNotInstalled` or `FSOAuthStatusErrorFoursquareOAuthNotSupported`, this method will present the user with the Foursquare app's page on the App Store so that the may easily install or update the app (by bouncing them out to the App Store app, or by presenting a modal StoreKit sheet if running on iOS 6+ and compiled with at least the iOS 6 SDK). If you pass NO, you should manually handle these two return values appropriately. This parameter has no effect if running on iOS 9 or later as there is no way to detect if Foursquare is installed when using universal links.
 
 ```objc
-+ (NSString *)accessCodeForFSOAuthURL:(NSURL *)url 
-+                               error:(FSOAuthErrorCode *)errorCode;
++ (nullable NSString *)accessCodeForFSOAuthURL:(NSURL *)url 
++                           		     error:(nullable FSOAuthErrorCode *)errorCode;
 ```
 
 Call this method when you receive the callback from Foursquare, passing in the `NSURL` object you received. It will parse out the access code and error code (if any) from the URL's parameters and return them to you.

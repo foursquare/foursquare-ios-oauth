@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		309768F71CDD3D1D009E6193 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 309768F61CDD3D1D009E6193 /* SafariServices.framework */; };
 		F10698A51729B6F50053AF0B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10698A41729B6F50053AF0B /* UIKit.framework */; };
 		F10698A71729B6F50053AF0B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10698A61729B6F50053AF0B /* Foundation.framework */; };
 		F10698A91729B6F50053AF0B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10698A81729B6F50053AF0B /* CoreGraphics.framework */; };
@@ -25,6 +26,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		309768F61CDD3D1D009E6193 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		F10698A11729B6F50053AF0B /* FSExampleOAuth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FSExampleOAuth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F10698A41729B6F50053AF0B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		F10698A61729B6F50053AF0B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -53,6 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				309768F71CDD3D1D009E6193 /* SafariServices.framework in Frameworks */,
 				F189B5FD183EA2ED009FB6B0 /* StoreKit.framework in Frameworks */,
 				F10698A51729B6F50053AF0B /* UIKit.framework in Frameworks */,
 				F10698A71729B6F50053AF0B /* Foundation.framework in Frameworks */,
@@ -83,6 +86,7 @@
 		F10698A31729B6F50053AF0B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				309768F61CDD3D1D009E6193 /* SafariServices.framework */,
 				F189B5FC183EA2ED009FB6B0 /* StoreKit.framework */,
 				F10698A41729B6F50053AF0B /* UIKit.framework */,
 				F10698A61729B6F50053AF0B /* Foundation.framework */,

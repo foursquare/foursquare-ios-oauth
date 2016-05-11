@@ -30,10 +30,11 @@
     [self dismissKeyboard:nil];
     
     // The testing app currently does not support universal url callbacks
-    FSOAuthStatusCode statusCode = [FSOAuth authorizeUserUsingClientId:self.clientIdField.text
-                                               nativeURICallbackString:self.callbackUrlField.text
-                                            universalURICallbackString:self.universalLinkCallbackUrlField.text
-                                                  allowShowingAppStore:YES];
+    FSOAuthStatusCode statusCode = [[FSOAuth shared] authorizeUserUsingClientId:self.clientIdField.text
+                                                        nativeURICallbackString:self.callbackUrlField.text
+                                                     universalURICallbackString:self.universalLinkCallbackUrlField.text
+                                                           allowShowingAppStore:YES
+                                                      presentFromViewController:self];
     
     NSString *resultText = nil;
     
@@ -105,7 +106,7 @@
 - (void)handleURL:(NSURL *)url {
     if ([[url scheme] isEqualToString:@"fsoauthexample"]) {
         FSOAuthErrorCode errorCode;
-        NSString *accessCode = [FSOAuth accessCodeForFSOAuthURL:url error:&errorCode];;
+        NSString *accessCode = [[FSOAuth shared] accessCodeForFSOAuthURL:url error:&errorCode];;
         
         NSString *resultText = nil;
         if (errorCode == FSOAuthErrorNone) {
@@ -124,27 +125,27 @@
     
     [self dismissKeyboard:nil];
     
-    [FSOAuth requestAccessTokenForCode:self.latestAccessCode
-                              clientId:self.clientIdField.text
-                     callbackURIString:self.callbackUrlField.text
-                          clientSecret:self.clientSecretField.text
-                       completionBlock:^(NSString *authToken, BOOL requestCompleted, FSOAuthErrorCode errorCode) {
-                           
-                           NSString *resultText = nil;
-                           if (requestCompleted) {
-                               if (errorCode == FSOAuthErrorNone) {
-                                   resultText = [NSString stringWithFormat:@"Auth Token: %@", authToken];
-                               }
-                               else {
-                                   resultText = [self errorMessageForCode:errorCode];
-                               }
-                           }
-                           else {
-                               resultText = @"An error occurred when attempting to connect to the Foursquare server.";
-                           }
-                           
-                           self.resultLabel.text = [NSString stringWithFormat:@"Result: %@", resultText];
-                       }];
+    [[FSOAuth shared] requestAccessTokenForCode:self.latestAccessCode
+                                       clientId:self.clientIdField.text
+                              callbackURIString:self.callbackUrlField.text
+                                   clientSecret:self.clientSecretField.text
+                                completionBlock:^(NSString *authToken, BOOL requestCompleted, FSOAuthErrorCode errorCode) {
+                                    
+                                    NSString *resultText = nil;
+                                    if (requestCompleted) {
+                                        if (errorCode == FSOAuthErrorNone) {
+                                            resultText = [NSString stringWithFormat:@"Auth Token: %@", authToken];
+                                        }
+                                        else {
+                                            resultText = [self errorMessageForCode:errorCode];
+                                        }
+                                    }
+                                    else {
+                                        resultText = @"An error occurred when attempting to connect to the Foursquare server.";
+                                    }
+                                    
+                                    self.resultLabel.text = [NSString stringWithFormat:@"Result: %@", resultText];
+                                }];
 }
 
 - (void)dismissKeyboard:(id)sender {

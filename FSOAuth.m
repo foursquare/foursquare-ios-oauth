@@ -24,12 +24,35 @@
 #import <StoreKit/StoreKit.h>
 #endif
 
+#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
+#import <SafariServices/SafariServices.h>
+#endif
+
+#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
+@interface FSOAuth () <SFSafariViewControllerDelegate>
+
+@property (nonatomic) SFSafariViewController *safariVC;
+
+@end
+#endif
+
 @implementation FSOAuth
 
-+ (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID
++ (FSOAuth *)shared {
+    static FSOAuth *oauthInstance;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        oauthInstance = [[FSOAuth alloc] init];
+    });
+    
+    return oauthInstance;
+}
+
+- (FSOAuthStatusCode)authorizeUserUsingClientId:(NSString *)clientID
                         nativeURICallbackString:(NSString *)nativeURICallbackString
                      universalURICallbackString:(NSString *)universalURICallbackString
-                           allowShowingAppStore:(BOOL)allowShowingAppStore {
+                           allowShowingAppStore:(BOOL)allowShowingAppStore
+                      presentFromViewController:(UIViewController *)presentFromViewController {
     if ([clientID length] <= 0) {
         return FSOAuthStatusErrorInvalidClientID;
     }
@@ -44,13 +67,13 @@
 
     if (hasUniversalCallback) {
         NSString *urlScheme = [[NSURL URLWithString:universalURICallbackString] scheme];
-        if (![urlScheme isEqualToString:@"http"] 
+        if (![urlScheme isEqualToString:@"http"]
             && ![urlScheme isEqualToString:@"https"]) {
             return FSOAuthStatusErrorInvalidCallback;
         }
     }
 
-    BOOL universalLinksSupported = NO;
+    BOOL isOnIOS9OrLater = NO;
 #if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
     NSProcessInfo *processInfo = [NSProcessInfo processInfo];
     if ([processInfo respondsToSelector:@selector(isOperatingSystemAtLeastVersion:)]) {
@@ -59,19 +82,19 @@
         minVersion.minorVersion = 0;
         minVersion.patchVersion = 0;
         if ([processInfo isOperatingSystemAtLeastVersion:minVersion]) {
-            universalLinksSupported = YES;
+            isOnIOS9OrLater = YES;
         }
     }
 #endif
     
-    if (!universalLinksSupported && !hasNativeCallback) {
+    if (!isOnIOS9OrLater && !hasNativeCallback) {
         return FSOAuthStatusErrorInvalidCallback;
     }
 
-    if (!universalLinksSupported) {
+    if (!isOnIOS9OrLater) {
         if (![sharedApplication canOpenURL:[NSURL URLWithString:@"foursquare://"]]) {
             if (allowShowingAppStore) {
-                [self launchAppStoreOrShowStoreKitModal];
+                [self launchAppStoreOrShowStoreKitModalFromViewController:presentFromViewController];
             }
             
             return FSOAuthStatusErrorFoursquareNotInstalled;
@@ -80,15 +103,27 @@
     
     NSURL *authURL = nil;
     
-    if (universalLinksSupported) {
+    if (isOnIOS9OrLater) {
         NSString *urlEncodedCallbackString = nil;
         if (hasUniversalCallback) {
             urlEncodedCallbackString = [self urlEncodedStringForString:universalURICallbackString];
         }
         else {
-            urlEncodedCallbackString = [self urlEncodedStringForString:nativeURICallbackString];}
+            urlEncodedCallbackString = [self urlEncodedStringForString:nativeURICallbackString];
+        }
         
         authURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://foursquare.com/native/oauth2/authenticate?client_id=%@&redirect_uri=%@&response_type=code", clientID, urlEncodedCallbackString]];
+        
+#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
+        self.safariVC = [[SFSafariViewController alloc] initWithURL:authURL];
+        self.safariVC.delegate = self;
+        
+        [presentFromViewController presentViewController:self.safariVC
+                                                animated:YES
+                                              completion:nil];
+#else
+        [sharedApplication openURL:authURL];
+#endif
     }
     else {
         NSString *urlEncodedCallbackString = [self urlEncodedStringForString:nativeURICallbackString];
@@ -97,19 +132,19 @@
         
         if (![sharedApplication canOpenURL:authURL]) {
             if (allowShowingAppStore) {
-                [self launchAppStoreOrShowStoreKitModal];
+                [self launchAppStoreOrShowStoreKitModalFromViewController:presentFromViewController];
             }
             
             return FSOAuthStatusErrorFoursquareOAuthNotSupported;
         }
+        
+        [sharedApplication openURL:authURL];
     }
-    
-    [sharedApplication openURL:authURL];
     
     return FSOAuthStatusSuccess;
 }
 
-+ (FSOAuthErrorCode)errorCodeForString:(NSString *)value {
+- (FSOAuthErrorCode)errorCodeForString:(NSString *)value {
     if ([value isEqualToString:@"invalid_request"]) {
         return FSOAuthErrorInvalidRequest;
     }
@@ -130,48 +165,52 @@
     }
 }
 
-+ (NSString *)accessCodeForFSOAuthURL:(NSURL *)url error:(FSOAuthErrorCode *)errorCode {
+- (NSString *)accessCodeForFSOAuthURL:(NSURL *)url error:(FSOAuthErrorCode *)errorCode {
     NSString *accessCode = nil;
     
     if (errorCode != NULL) {
         *errorCode = FSOAuthErrorUnknown;
     }
     
-    if (url) {
-        NSArray *parameterPairs = [[url query] componentsSeparatedByString:@"&"];
-
-        for (NSString *pair in parameterPairs) {
-            NSArray *keyValue = [pair componentsSeparatedByString:@"="];
-            if ([keyValue count] == 2) {
-                NSString *param = keyValue[0];
-                NSString *value = keyValue[1];
+#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
+    [self.safariVC dismissViewControllerAnimated:YES
+                                      completion:nil];
+    self.safariVC = nil;
+#endif
+    
+    NSArray *parameterPairs = [[url query] componentsSeparatedByString:@"&"];
+    
+    for (NSString *pair in parameterPairs) {
+        NSArray *keyValue = [pair componentsSeparatedByString:@"="];
+        if ([keyValue count] == 2) {
+            NSString *param = keyValue[0];
+            NSString *value = keyValue[1];
+            
+            if ([param isEqualToString:@"code"]) {
+                accessCode = value;
                 
-                if ([param isEqualToString:@"code"]) {
-                    accessCode = value;
-                    
-                    if (errorCode != NULL) {
-                        if (*errorCode == FSOAuthErrorUnknown) { // don't clobber any previously found real error value
-                            *errorCode = FSOAuthErrorNone;
-                        }
+                if (errorCode != NULL) {
+                    if (*errorCode == FSOAuthErrorUnknown) { // don't clobber any previously found real error value
+                        *errorCode = FSOAuthErrorNone;
                     }
                 }
-                else if ([param isEqualToString:@"error"]) {
-                    if (errorCode != NULL) {
-                        *errorCode = [self errorCodeForString:value];
-                    }   
+            }
+            else if ([param isEqualToString:@"error"]) {
+                if (errorCode != NULL) {
+                    *errorCode = [self errorCodeForString:value];
                 }
             }
         }
     }
+    
     return accessCode;
 }
 
-+ (void)requestAccessTokenForCode:(NSString *)accessCode clientId:(NSString *)clientID callbackURIString:(NSString *)callbackURIString clientSecret:(NSString *)clientSecret completionBlock:(FSTokenRequestCompletionBlock)completionBlock {
+- (void)requestAccessTokenForCode:(NSString *)accessCode clientId:(NSString *)clientID callbackURIString:(NSString *)callbackURIString clientSecret:(NSString *)clientSecret completionBlock:(FSTokenRequestCompletionBlock)completionBlock {
     if ([accessCode length] > 0
         && [clientID length] > 0
         && [callbackURIString length] > 0
-        && [clientSecret length] > 0
-        && completionBlock) {
+        && [clientSecret length] > 0) {
         
         NSString *urlEncodedCallbackString = [self urlEncodedStringForString:callbackURIString];
         
@@ -198,7 +237,7 @@
     }
 }
 
-+ (void)launchAppStoreOrShowStoreKitModal {
+-(void)launchAppStoreOrShowStoreKitModalFromViewController:(UIViewController *)fromViewController {
 #if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 60000)
     if ([SKStoreProductViewController class]) {
         SKStoreProductViewController *storeViewController = [SKStoreProductViewController new];
@@ -206,23 +245,7 @@
         [storeViewController loadProductWithParameters:@{SKStoreProductParameterITunesItemIdentifier : kFoursquareAppStoreID}
                                        completionBlock:nil];
         
-        UIViewController *controller = [UIApplication sharedApplication].keyWindow.rootViewController;
-        while (1) {
-            if ([controller isKindOfClass:[UITabBarController class]]) {
-                controller = ((UITabBarController *)controller).selectedViewController;
-            }
-            else if ([controller isKindOfClass:[UINavigationController class]]) {
-                controller = ((UINavigationController *)controller).visibleViewController;
-            }
-            else if (controller.presentedViewController) {
-                controller = controller.presentedViewController;
-            }
-            else {
-                break;
-            }
-        }
-        
-        [controller presentViewController:storeViewController animated:YES completion:nil];
+        [fromViewController presentViewController:storeViewController animated:YES completion:nil];
     }
     else
 #endif
@@ -232,12 +255,12 @@
 }
 
 #if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 60000)
-+ (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController {
+- (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController {
     [viewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 #endif
 
-+ (NSString *)urlEncodedStringForString:(NSString *)string {
+- (NSString *)urlEncodedStringForString:(NSString *)string {
     NSString *urlEncodedString = nil;
     // Introduced in iOS 7, -stringByAddingPercentEncodingWithAllowedCharacters: replaces CFURLCreateStringByAddingPercentEscapes (deprecated in iOS 9).
     if ([NSString instancesRespondToSelector:@selector(stringByAddingPercentEncodingWithAllowedCharacters:)]) {
@@ -257,7 +280,7 @@
     return urlEncodedString;
 }
 
-+ (void)sendAsynchronousRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLResponse *response, NSData *data, NSError *error))completionHandler
+- (void)sendAsynchronousRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLResponse *response, NSData *data, NSError *error))completionHandler
 {
     // Introduced in iOS 7, NSURLSession replaces NSURLConnection (deprecated in iOS 9).
     if ([NSURLSession class]) {
@@ -276,5 +299,15 @@
 #pragma clang diagnostic pop
     }
 }
+
+#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
+#pragma mark - SFSafariViewControllerDelegate
+
+- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+    if (controller == self.safariVC) {
+        self.safariVC = nil;
+    }
+}
+#endif
 
 @end
