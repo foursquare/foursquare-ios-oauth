@@ -1,0 +1,4 @@
+language: objective-c
+osx_image: xcode7
+script:
+    - xcodebuild -project "FSExampleOAuth/FSExampleOAuth.xcodeproj" -scheme "FSExampleOAuth" -sdk iphonesimulator -configuration Debug -PBXBuildsContinueAfterErrors=0 -destination "name=iPhone 4s,OS=8.4" ACTIVE_ARCH_ONLY=0 build
