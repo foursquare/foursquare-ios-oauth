@@ -109,7 +109,6 @@
 				TargetAttributes = {
 					7FD306C91D5FBE030024B053 = {
 						CreatedOnToolsVersion = 8.0;
-						DevelopmentTeam = 53AF9EMAN4;
 						DevelopmentTeamName = "Gareth Jones";
 						LastSwiftMigration = 0800;
 						ProvisioningStyle = Automatic;
@@ -280,6 +279,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = FSExampleOAuthSwift/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.foursquare.FSExampleOAuthSwift;
@@ -295,6 +295,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = FSExampleOAuthSwift/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.foursquare.FSExampleOAuthSwift;
