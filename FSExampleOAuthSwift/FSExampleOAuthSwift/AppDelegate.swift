@@ -33,7 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      @note You must supply the ViewController containing the handleURL function.
     */
     
-    func application(_ app: UIApplication, open url: URL, options: [String : AnyObject] = [:]) -> Bool {
+    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
         let vc: ViewController = self.window!.rootViewController as! ViewController
         vc.handleURL(url: url)
         return true
@@ -49,7 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      @note You must supply the ViewController containing the handleURL function.
     */
     
-    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: ([AnyObject]?) -> Void) -> Bool {
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
         var didHandle = false
         if (userActivity.activityType == NSUserActivityTypeBrowsingWeb) {
             self.viewController?.handleURL(url: userActivity.webpageURL!)
@@ -65,12 +65,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      @param launchoptions A dictionary containing the reason the app was launched.
     */
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        self.window = UIWindow(frame: UIScreen.main().bounds)
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
+        self.window = UIWindow(frame: UIScreen.main.bounds)
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         self.viewController = storyboard.instantiateInitialViewController() as! ViewController
         self.window?.rootViewController = self.viewController
-        self.window?.makeKeyAndVisible()
         self.window?.makeKeyAndVisible()
         return true
     }
