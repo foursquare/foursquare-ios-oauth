@@ -28,7 +28,7 @@ FSOAuth has three primary methods.
                         nativeURICallbackString:(NSString *)nativeURICallbackString
                      universalURICallbackString:(NSString *)universalURICallbackString
                            allowShowingAppStore:(BOOL)allowShowingAppStore
-            		  presentFromViewController:(UIViewController *)presentFromViewController;
+                      presentFromViewController:(UIViewController *)presentFromViewController;
 ```
 Call this method with your app's client ID and callback string(s) to authorize a user with Foursquare. On iOS 9 or greater, a webview will be presented; on iOS 8 or lower, if a current version of the Foursquare app is installed, it will bounce the user out to that app and present them with an authorization dialog. After the user chooses Accept or Deny, your app will receive a callback at the url specified with the accessCode for the user attached. 
 
@@ -50,7 +50,7 @@ If the `allowShowingAppStore` param is set to YES, then when returning `FSOAuthS
 
 ```objc
 + (nullable NSString *)accessCodeForFSOAuthURL:(NSURL *)url 
-+                           		     error:(nullable FSOAuthErrorCode *)errorCode;
++                                        error:(nullable FSOAuthErrorCode *)errorCode;
 ```
 
 Call this method when you receive the callback from Foursquare, passing in the `NSURL` object you received. It will parse out the access code and error code (if any) from the URL's parameters and return them to you.
@@ -65,10 +65,10 @@ The possible error code values are:
 
 ```objc
 + (void)requestAccessTokenForCode:(NSString *)accessCode
-		                 clientId:(NSString *)clientID
-		        callbackURIString:(NSString *)callbackURIString
-	                 clientSecret:(NSString *)clientSecret
-		          completionBlock:(FSTokenRequestCompletionBlock)completionBlock;
+                         clientId:(NSString *)clientID
+                callbackURIString:(NSString *)callbackURIString
+                     clientSecret:(NSString *)clientSecret
+                  completionBlock:(FSTokenRequestCompletionBlock)completionBlock;
 ```
 
 This method will initiate an asynchronous network request to Foursquare to convert a user's access code into an auth token.
